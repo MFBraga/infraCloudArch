@@ -1,0 +1,60 @@
+## Faculdade Impacta - MBA Arquitetura de Soluções (Turma AS_04/2022)
+## Infrastructure and Cloud Architecture (Prof. João Victorino)
+## Atividade Aula 04 - Entregue em 21/08/2022
+## MAURICIO DE FREITAS BRAGA (RA nº. 2201495)
+
+## Compose file version 3
+## - https://docs.docker.com/compose/compose-file/compose-file-v3/
+version: '3'
+
+## Deployment - Containers
+services:
+  web-server:
+    build: .    ## Build new image from 'Dockerfile' ('install mysql-client')
+    image: mbraga/nginx:aula04
+    container_name: nginx_aula04
+    # profiles: [ 'classroom' ]
+    restart: 'no'
+    networks:
+      bridge_aula04:
+        ipv4_address: 172.16.16.4   ## Define static ipv4 address
+    ports:
+      - 80:80
+    volumes:
+      - ./99-script.sh:/docker-entrypoint.d/99-script.sh    ## Bind ./99-script.sh to Init Script Folder
+    depends_on:
+      database:
+        condition: service_healthy    ## 'web-server' only starts after valid response from 'database' Service Healthckeck
+
+  database:
+    image: mysql:latest
+    container_name: mysql_aula04
+    # profiles: [ 'classroom' ]
+    restart: 'no'
+    networks:
+      bridge_aula04:
+        ipv4_address: 172.16.16.44   ## Define static ipv4 address
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_HOST=mysql_aula04
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=impacta
+      - MYSQL_TCP_PORT=3306
+      - TZ="America/Sao_Paulo"
+    volumes:
+      - ./mysql-init-files/schema.sql:/docker-entrypoint-initdb.d/schema.sql    ## DB Imports (schema + data)
+    command: [ "--default-authentication-plugin=mysql_native_password" ]        ## Avoid "Error: Plugin caching_sha2_password" on Remote Connections
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "mauricio", "--password=password"]   ## Status Check from user 'mauricio'
+      timeout: 10s
+      retries: 1
+
+## Deployment - Isolated Brigde Network
+networks:
+  bridge_aula04:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.16.0/24
+          gateway: 172.16.16.250
