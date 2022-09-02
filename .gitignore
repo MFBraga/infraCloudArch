@@ -1,0 +1,27 @@
+## Local .terraform directories
+**/.terraform/*
+*.terraform*
+
+## .tfstate files
+*.tfstate
+*.tfstate.*
+
+## .tfvars files
+*.tfvars
+*.tfvars.*
+
+## Override Files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+## Crash log files
+crash.log
+crash.*.log
+
+## Credentials
+*.pem
+gcpkey.json
+gcpkey.*
+kubeconfig*

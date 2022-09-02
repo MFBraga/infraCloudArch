@@ -1,0 +1,8 @@
+FROM khromov/alpine-nginx-php8:latest
+
+LABEL MAINTAINER="Mauricio Braga"
+LABEL MAINTAINER="mauricio.braga@aluno.faculdadeimpacta.com.br"
+
+COPY index.php /var/www/html/index.php
+
+EXPOSE 80/tcp

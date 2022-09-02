@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-mysql-nodeport
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+  selector:
+    environment: classroom
+    application: database

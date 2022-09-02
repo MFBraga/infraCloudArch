@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pod-nginx
+  labels:
+    environment: classroom
+    application: web-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      environment: classroom
+      application: web-server
+  template:
+    metadata:
+      labels:
+        environment: classroom
+        application: web-server
+    spec:
+      containers:
+      - name: container-nginx
+        image: us-west1-docker.pkg.dev/infra-cloud-architecture/as04-aula05/mbraga-nginx:aula05
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        # livenessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: 8080
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 60
+        #   timeoutSeconds: 5
+        # readinessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: 8080
+        #   initialDelaySeconds: 30
+        #   periodSeconds: 60
+        #   timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+      ## "containers" ends here
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: regcred
+  ## "template" ends here
+status: {}
